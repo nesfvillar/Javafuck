@@ -1,5 +1,6 @@
 import java.io.Console;
 import java.io.IOException;
+import java.util.Map;
 
 public class Brainfuck {
     private byte[] dataArray = new byte[30_000];
@@ -22,38 +23,64 @@ public class Brainfuck {
         return instructionsPointer < instructionsArray.length;
     }
 
-    public void doNextInstruction() throws IOException {
+    public void doNextInstruction() {
         char instruction = instructionsArray[instructionsPointer];
-        switch (instruction) {
-            case '>':
-                incrementDataPointer();
-                break;
-            case '<':
-                decrementDataPointer();
-                break;
-            case '+':
-                incrementDataValue();
-                break;
-            case '-':
-                decrementDataValue();
-                break;
-            case '.':
-                outputData();
-                break;
-            case ',':
-                inputData();
-                break;
-            case '[':
-                forwardConditionalJump();
-                break;
-            case ']':
-                backwardConditionalJump();
-                break;
-            default:
-                break;
+        BrainfuckOperator op = operations.get(instruction);
+        if (op != null) {
+            op.run();
         }
         ++instructionsPointer;
     }
+
+    private interface BrainfuckOperator {
+        public void run();
+    }
+
+    private final Map<Character, BrainfuckOperator> operations = Map.ofEntries(
+            Map.entry('>', new BrainfuckOperator() {
+                public void run() {
+                    incrementDataPointer();
+                }
+            }),
+            Map.entry('<', new BrainfuckOperator() {
+                public void run() {
+                    decrementDataPointer();
+                }
+            }),
+            Map.entry('+', new BrainfuckOperator() {
+                public void run() {
+                    incrementDataValue();
+                }
+            }),
+            Map.entry('-', new BrainfuckOperator() {
+                public void run() {
+                    decrementDataValue();
+                }
+            }),
+            Map.entry('.', new BrainfuckOperator() {
+                public void run() {
+                    outputData();
+                }
+            }),
+            Map.entry(',', new BrainfuckOperator() {
+                public void run() {
+                    try {
+                        inputData();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }),
+            Map.entry('[', new BrainfuckOperator() {
+                public void run() {
+                    forwardConditionalJump();
+                }
+            }),
+            Map.entry(']', new BrainfuckOperator() {
+                public void run() {
+                    backwardConditionalJump();
+                }
+            }));
 
     // > Increment the data pointer (to point to the next cell to the right).
     private void incrementDataPointer() {
