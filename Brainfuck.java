@@ -1,3 +1,4 @@
+import java.io.Console;
 import java.io.IOException;
 
 public class Brainfuck {
@@ -83,8 +84,13 @@ public class Brainfuck {
     // , Accept one byte of input, storing its value in the byte at the data
     // pointer.
     private void inputData() throws IOException {
-        int input = System.in.read();
-        dataArray[dataPointer] = (byte) input;
+        Console con = System.console();
+        if (con == null)
+            throw new IOException("No input console available");
+
+        String input = con.readLine();
+        dataArray[dataPointer] = Byte.parseByte(input);
+
     }
 
     // [ If the byte at the data pointer is zero, then instead of moving the
