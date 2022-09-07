@@ -76,13 +76,15 @@ public class Brainfuck {
 
     // . Output the byte at the data pointer.
     private void outputData() {
-        System.out.print((char) dataArray[dataPointer]);
+        byte output = dataArray[dataPointer];
+        System.out.print((char) output);
     }
 
     // , Accept one byte of input, storing its value in the byte at the data
     // pointer.
     private void inputData() throws IOException {
-        dataArray[dataPointer] = (byte) System.in.read();
+        int input = System.in.read();
+        dataArray[dataPointer] = (byte) input;
     }
 
     // [ If the byte at the data pointer is zero, then instead of moving the
